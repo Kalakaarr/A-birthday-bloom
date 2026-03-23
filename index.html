@@ -166,7 +166,25 @@
     audio {
       width: 100%;
       margin-top: 18px;
-      display: none;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .manual-play {
+      margin-top: 14px;
+      display: inline-block;
+      background: #c76f8b;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .manual-play:hover {
+      background: #b8607c;
     }
 
     .footer {
@@ -301,7 +319,7 @@
         <button class="yes-btn" id="yesBtn">Yes</button>
         <button class="no-btn" id="noBtn">No</button>
       </div>
-      <p id="popupMessage" class="hidden">The song will start in 3 seconds...</p>
+      <p id="popupMessage" class="hidden">Opening your surprise in 3 seconds...</p>
     </div>
   </div>
 
@@ -354,19 +372,20 @@ jo ek khoobsurat rooh ko milni chahiye.
 
       <div class="song-copy">
         <h2>Darmiyaan</h2>
-        <p>
-          Ek aisa izhaar, jo lafzon se kam aur dil se zyada likha gaya.
-        </p>
-        <p>
-          Jo kuch keh na saka, shayad woh sab is gaane ne keh diya.
-        </p>
-        <div class="countdown" id="countdownText">The song will start in 3 seconds...</div>
-        <div class="music-note" id="musicNote">Tap on the popup once, then let the moment unfold.</div>
+        <p>Ek aisa izhaar, jo lafzon se kam aur dil se zyada likha gaya.</p>
+        <p>Jo kuch keh na saka, shayad woh sab is gaane ne keh diya.</p>
 
-        <audio id="birthdaySong" loop>
-          <source src="darmiyaan-final.mp3" type="audio/mpeg" />
+        <div class="countdown" id="countdownText">Opening your surprise in 3 seconds...</div>
+        <div class="music-note" id="musicNote">
+          For the best experience, press the play button below once the page opens.
+        </div>
+
+        <audio id="birthdaySong" controls loop preload="auto">
+          <source src="./darmiyaan-final.mp3" type="audio/mpeg" />
           Your browser does not support the audio element.
         </audio>
+
+        <button class="manual-play" id="manualPlayBtn">Play Darmiyaan</button>
       </div>
     </section>
 
@@ -383,55 +402,51 @@ jo ek khoobsurat rooh ko milni chahiye.
     const song = document.getElementById("birthdaySong");
     const countdownText = document.getElementById("countdownText");
     const musicNote = document.getElementById("musicNote");
+    const manualPlayBtn = document.getElementById("manualPlayBtn");
+
+    async function playSongDirectly() {
+      try {
+        song.volume = 1;
+        await song.play();
+        countdownText.textContent = "Now playing Darmiyaan...";
+        musicNote.textContent = "The song will keep playing while this page remains open.";
+      } catch (error) {
+        countdownText.textContent = "Tap the audio player controls below to start the song.";
+        musicNote.textContent = "Your browser blocked automatic playback, but the controls will work.";
+        console.error(error);
+      }
+    }
 
     function startSequence() {
       popupMessage.classList.remove("hidden");
-      countdownText.style.display = "block";
 
       yesBtn.disabled = true;
       noBtn.disabled = true;
 
       let seconds = 3;
-      popupMessage.textContent = `The song will start in ${seconds} seconds...`;
-      countdownText.textContent = `The song will start in ${seconds} seconds...`;
+      popupMessage.textContent = `Opening your surprise in ${seconds} seconds...`;
+      countdownText.style.display = "block";
+      countdownText.textContent = `Opening your surprise in ${seconds} seconds...`;
 
       const timer = setInterval(() => {
         seconds--;
         if (seconds > 0) {
-          popupMessage.textContent = `The song will start in ${seconds} seconds...`;
-          countdownText.textContent = `The song will start in ${seconds} seconds...`;
+          popupMessage.textContent = `Opening your surprise in ${seconds} seconds...`;
+          countdownText.textContent = `Opening your surprise in ${seconds} seconds...`;
         }
       }, 1000);
 
-      setTimeout(async () => {
+      setTimeout(() => {
         clearInterval(timer);
         popup.classList.add("hidden");
-        countdownText.textContent = "Now playing Darmiyaan...";
-        musicNote.textContent = "The song will keep playing while this page remains open.";
-
-        try {
-          song.volume = 1;
-          await song.play();
-        } catch (error) {
-          countdownText.textContent = "Tap anywhere once to start the song.";
-          console.error(error);
-
-          document.body.addEventListener("click", async function handlePlay() {
-            try {
-              await song.play();
-              countdownText.textContent = "Now playing Darmiyaan...";
-              musicNote.textContent = "The song will keep playing while this page remains open.";
-              document.body.removeEventListener("click", handlePlay);
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
+        countdownText.textContent = "Press play to hear Darmiyaan.";
+        musicNote.textContent = "For the most reliable experience, tap the play button below.";
       }, 3000);
     }
 
     yesBtn.addEventListener("click", startSequence);
     noBtn.addEventListener("click", startSequence);
+    manualPlayBtn.addEventListener("click", playSongDirectly);
   </script>
 </body>
 </html>
